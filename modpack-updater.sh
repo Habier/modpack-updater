@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <destination_directory> <zip_file>"
+    exit 1
+fi
+
+DESTINATION_DIR="$1"
+ZIP_ARCHIVE="$2"
+
+FOLDERS_TO_RESTORE=("config" "defaultconfigs" "modernfix" "mods" "schematics")
+
+if [ ! -d "$DESTINATION_DIR" ]; then
+    echo "❌ Destination directory does not exist: $DESTINATION_DIR"
+    exit 1
+fi
+
+if [ ! -f "$ZIP_ARCHIVE" ]; then
+    echo "❌ ZIP file does not exist: $ZIP_ARCHIVE"
+    exit 1
+fi
+
+echo "📂 Destination directory: $DESTINATION_DIR"
+echo "🗜 ZIP archive: $ZIP_ARCHIVE"
+echo
+
+echo "🧹 Removing old folders..."
+for folder in "${FOLDERS_TO_RESTORE[@]}"; do
+    target="$DESTINATION_DIR/$folder"
+    if [ -d "$target" ]; then
+        rm -rf "$target"
+        echo "✔ Removed: $target"
+    else
+        echo "⚠ Not found: $target"
+    fi
+done
+echo
+
+echo "📦 Extracting folders from ZIP..."
+for folder in "${FOLDERS_TO_RESTORE[@]}"; do
+    echo "➡ Extracting: $folder"
+    unzip -o "$ZIP_ARCHIVE" "$folder/*" -d "$DESTINATION_DIR" >/dev/null 2>&1
+done
+
+echo
+echo "✅ Process completed successfully."
