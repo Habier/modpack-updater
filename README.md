@@ -34,6 +34,36 @@ To make the script available for **all users** on your Linux system:
 
 ---
 
+## 📦 Install via .deb Package
+
+You can build and install a .deb package for easy installation on Debian/Ubuntu systems.
+
+### Build the .deb package
+
+From the project root, run:
+
+```bash
+bash build-deb.sh
+```
+
+This will create a file named `modpack-updater_1.0.0_all.deb`.
+
+### Install the package
+
+```bash
+sudo dpkg -i modpack-updater_1.0.0_all.deb
+```
+
+If you see dependency errors, fix them with:
+
+```bash
+sudo apt-get install -f
+```
+
+After installation, you can use `modpack-updater.sh` from anywhere as described above.
+
+---
+
 ## 🧠 Usage
 
 Run it from any user and directory:

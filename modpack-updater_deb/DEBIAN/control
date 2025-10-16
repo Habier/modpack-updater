@@ -1,0 +1,8 @@
+Package: modpack-updater
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash, unzip
+Maintainer: Habier <your@email.com>
+Description: Simple script to update modpack folders from a ZIP archive.
