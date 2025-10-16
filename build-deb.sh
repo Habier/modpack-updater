@@ -21,6 +21,14 @@ fi
 # Ensure execution permissions
 chmod 755 "$PKG_DIR/usr/local/bin/modpack-updater.sh"
 
+# Check that the autocomplete file exists
+if [ ! -f "$PKG_DIR/etc/bash_completion.d/modpack-updater" ]; then
+  echo "Warning: Autocomplete file $PKG_DIR/etc/bash_completion.d/modpack-updater does not exist."
+else
+  # Ensure execution permissions (readable for all)
+  chmod 644 "$PKG_DIR/etc/bash_completion.d/modpack-updater"
+fi
+
 # Remove previous package if it exists
 if [ -f "$PKG_NAME" ]; then
   echo "Removing previous package: $PKG_NAME"
