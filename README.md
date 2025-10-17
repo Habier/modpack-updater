@@ -45,7 +45,7 @@ modpack-updater <target_directory> <zip_file>
 ### 📘 Example
 
 ```bash
-modpack-updater /home/habier/minecraft /home/habier/backups/mods_backup.zip
+modpack-updater /home/habier/minecraft /home/habier/new_modpack.zip
 ```
 
 ---
