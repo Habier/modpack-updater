@@ -34,6 +34,7 @@ for folder in "${FOLDERS_TO_RESTORE[@]}"; do
         echo "⚠ Not found: $target"
     fi
 done
+
 echo
 
 echo "📦 Extracting folders from ZIP..."
@@ -44,4 +45,3 @@ done
 
 echo
 echo "✅ Process completed successfully."
-

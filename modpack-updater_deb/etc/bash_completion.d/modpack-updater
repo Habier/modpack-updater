@@ -27,6 +27,5 @@ _modpack_updater_completions()
     return 0
 }
 
-# Register completion for both possible command names (with and without .sh)
-complete -F _modpack_updater_completions modpack-updater.sh
+# Register completion for the canonical command name (no .sh)
 complete -F _modpack_updater_completions modpack-updater

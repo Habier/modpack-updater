@@ -27,16 +27,14 @@ if [ -f "$CONTROL_FILE" ]; then
   fi
 fi
 
-# Check that the main file exists
-if [ ! -f "$PKG_DIR/usr/local/bin/modpack-updater.sh" ]; then
-  echo "Error: File $PKG_DIR/usr/local/bin/modpack-updater.sh does not exist."
-  exit 1
-fi
+# Ensure the package contains the command without .sh
+BIN_DIR="$PKG_DIR/usr/local/bin"
+PLAIN_BIN="$BIN_DIR/modpack-updater"
 
-# Ensure execution permissions for the script
-chmod 755 "$PKG_DIR/usr/local/bin/modpack-updater.sh"
+# Ensure execution permissions for the final binary
+chmod 755 "$PLAIN_BIN"
 
-echo "Set executable permission on usr/local/bin/modpack-updater.sh"
+echo "Set executable permission on $PLAIN_BIN"
 
 # Handle autocomplete file if present
 COMPLETION_FILE="$PKG_DIR/etc/bash_completion.d/modpack-updater"
@@ -62,6 +60,25 @@ else
     echo "Manpage (gz) exists: $MANPAGE_GZ"
   else
     echo "Warning: Manpage not found at $MANPAGE_PLAIN (or .gz). No manpage will be included."
+  fi
+fi
+
+# Make maintainer scripts executable if present
+MAINT_SCRIPTS=("postinst" "prerm" "postrm" "preinst")
+for s in "${MAINT_SCRIPTS[@]}"; do
+  SCRIPT_PATH="$PKG_DIR/DEBIAN/$s"
+  if [ -f "$SCRIPT_PATH" ]; then
+    chmod 755 "$SCRIPT_PATH"
+    echo "Set executable permission on maintainer script: $SCRIPT_PATH"
+  fi
+done
+
+# Ensure DEBIAN directory and control file have acceptable permissions for dpkg-deb
+if [ -d "$PKG_DIR/DEBIAN" ]; then
+  chmod 0755 "$PKG_DIR/DEBIAN"
+  if [ -f "$CONTROL_FILE" ]; then
+    chmod 0644 "$CONTROL_FILE"
+    echo "Set permissions on $PKG_DIR/DEBIAN (0755) and $CONTROL_FILE (0644)"
   fi
 fi
 

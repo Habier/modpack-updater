@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+# Ensure wrapper is executable (if present)
+if [ -f "/usr/local/bin/modpack-updater" ]; then
+  chmod 755 "/usr/local/bin/modpack-updater" || true
+fi
+
+# Try to let the system update completions if possible
+if command -v update-bash-completion >/dev/null 2>&1; then
+  update-bash-completion || true
+fi
+
+# Print a short info message
+cat <<'EOF'
+Installation complete. You can run the tool as 'modpack-updater'.
+To enable completion now in your current shell:
+  source /etc/bash_completion.d/modpack-updater
+View the manpage with:
+  man modpack-updater
+EOF
+
+exit 0

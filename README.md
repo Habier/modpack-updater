@@ -1,4 +1,4 @@
-# 🧩 modpack-updater.sh
+# 🧩 modpack-updater
 
 A simple Bash script that removes a predefined set of folders from a target directory, then restores them by extracting those same folders from a ZIP file.
 
@@ -30,7 +30,7 @@ If you see dependency errors, fix them with:
 sudo apt-get install -f
 ```
 
-After installation, you can use `modpack-updater.sh` from anywhere as described above.
+After installation, you can use `modpack-updater` from anywhere as described above.
 
 ---
 
@@ -39,13 +39,13 @@ After installation, you can use `modpack-updater.sh` from anywhere as described 
 Run it from any user and directory:
 
 ```bash
-modpack-updater.sh <target_directory> <zip_file>
+modpack-updater <target_directory> <zip_file>
 ```
 
 ### 📘 Example
 
 ```bash
-modpack-updater.sh /home/habier/minecraft /home/habier/backups/mods_backup.zip
+modpack-updater /home/habier/minecraft /home/habier/backups/mods_backup.zip
 ```
 
 ---

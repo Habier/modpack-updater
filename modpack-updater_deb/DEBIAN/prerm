@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+# Pre-removal: nothing special required, but ensure we don't error on package removal
+# Attempt to update bash completion caches if available
+if command -v update-bash-completion >/dev/null 2>&1; then
+  update-bash-completion || true
+fi
+
+exit 0
+
