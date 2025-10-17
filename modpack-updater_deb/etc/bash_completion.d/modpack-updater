@@ -1,18 +1,32 @@
 # Bash completion for modpack-updater
 _modpack_updater_completions()
 {
-    local cur prev opts
+    local cur prev
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    opts="update install remove help"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
 
+    # Global options
     if [[ ${cur} == -* ]] ; then
         COMPREPLY=( $(compgen -W "--help --version" -- ${cur}) )
         return 0
     fi
 
-    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    # If completing first argument -> suggest directories
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        COMPREPLY=( $(compgen -d -- "$cur") )
+        return 0
+    fi
+
+    # If completing second argument -> suggest .zip files
+    if [[ $COMP_CWORD -eq 2 ]]; then
+        COMPREPLY=( $(compgen -f -- "$cur" | grep -E '\.zip$' || true) )
+        return 0
+    fi
+
     return 0
 }
-complete -F _modpack_updater_completions modpack-updater
 
+# Register completion for both possible command names (with and without .sh)
+complete -F _modpack_updater_completions modpack-updater.sh
+complete -F _modpack_updater_completions modpack-updater
