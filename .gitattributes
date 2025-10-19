@@ -1,0 +1,7 @@
+# Enforce LF (Unix) line endings for shell scripts, completion scripts and man pages
+*.sh text eol=lf
+*.bash text eol=lf
+*.1 text eol=lf
+modpack-updater_deb/etc/bash_completion.d/* text eol=lf
+modpack-updater_deb/usr/local/bin/* text eol=lf
+
