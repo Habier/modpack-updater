@@ -20,6 +20,17 @@ if [ ! -f "$ZIP_ARCHIVE" ]; then
     exit 1
 fi
 
+
+FIRST_FOLDER="$DESTINATION_DIR/${FOLDERS_TO_RESTORE[0]}"
+if [ -d "$FIRST_FOLDER" ]; then
+    ORIGINAL_OWNER=$(stat -c '%U:%G' "$FIRST_FOLDER")
+    echo "👤 Original owner detected: $ORIGINAL_OWNER"
+else
+    ORIGINAL_OWNER=""
+    echo "⚠ First folder not found, will skip ownership restoration"
+fi
+
+
 echo "📂 Destination directory: $DESTINATION_DIR"
 echo "🗜 ZIP archive: $ZIP_ARCHIVE"
 echo
@@ -44,4 +55,17 @@ for folder in "${FOLDERS_TO_RESTORE[@]}"; do
 done
 
 echo
+
+if [ -n "$ORIGINAL_OWNER" ]; then
+    echo "🔐 Restoring ownership to $ORIGINAL_OWNER..."
+    for folder in "${FOLDERS_TO_RESTORE[@]}"; do
+        target="$DESTINATION_DIR/$folder"
+        if [ -d "$target" ]; then
+            chown -R "$ORIGINAL_OWNER" "$target"
+            echo "✔ Ownership restored: $target"
+        fi
+    done
+    echo
+fi
+
 echo "✅ Process completed successfully."
