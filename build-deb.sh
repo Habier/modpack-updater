@@ -1,49 +1,43 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check that the script is run from the project root
-if [ ! -d "modpack-updater_deb" ]; then
-  echo "Error: Run this script from the project root."
-  exit 1
-fi
+[ -d "modpack-updater_deb" ] || { echo "Error: Run this script from the project root."; exit 1; }
 
-# Ensure dpkg-deb is available
-if ! command -v dpkg-deb >/dev/null 2>&1; then
-  echo "Error: dpkg-deb is required to build the package."
-  exit 1
-fi
+# Check required commands
+for cmd in dpkg-deb go; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required"; exit 1; }
+done
 
-# Allow version to be set as an argument or environment variable
-VERSION="${1:-${VERSION:-1.0.0}}"
+VERSION="${1:-${VERSION:-1.1.0}}"
 PKG_DIR="modpack-updater_deb"
 PKG_NAME="modpack-updater_${VERSION}_all.deb"
 
-# Update control file Version field if present
+# Update control file
 CONTROL_FILE="$PKG_DIR/DEBIAN/control"
 if [ -f "$CONTROL_FILE" ]; then
-  if grep -qE '^Version:' "$CONTROL_FILE"; then
-    sed -i "s/^Version:.*/Version: $VERSION/" "$CONTROL_FILE"
-    echo "Updated $CONTROL_FILE with Version: $VERSION"
-  fi
+  grep -qE '^Version:' "$CONTROL_FILE" && sed -i "s/^Version:.*/Version: $VERSION/" "$CONTROL_FILE"
+  grep -q '^Depends:.*unzip' "$CONTROL_FILE" || sed -i 's/^Depends:.*/&, unzip/' "$CONTROL_FILE"
 fi
 
-# Ensure the package contains the command without .sh
+cd modpack-updater-go
+go mod tidy 2>/dev/null
+GOOS=linux GOARCH=amd64 go build -o "../$PKG_DIR/usr/local/bin/modpack-updater" .
+cd ..
+
+# Set executable permissions
 BIN_DIR="$PKG_DIR/usr/local/bin"
 PLAIN_BIN="$BIN_DIR/modpack-updater"
-
-# Ensure execution permissions for the final binary
 chmod 755 "$PLAIN_BIN"
-
-echo "Set executable permission on $PLAIN_BIN"
+echo "✅ Built binary: $PLAIN_BIN"
 
 # Handle autocomplete file if present
 COMPLETION_FILE="$PKG_DIR/etc/bash_completion.d/modpack-updater"
 if [ ! -f "$COMPLETION_FILE" ]; then
-  echo "Warning: Autocomplete file $COMPLETION_FILE does not exist. It will not be included in the package."
+  echo "⚠ Warning: Autocomplete file $COMPLETION_FILE does not exist. It will not be included in the package."
 else
   # Ensure readable permissions
   chmod 644 "$COMPLETION_FILE"
-  echo "Included autocomplete: $COMPLETION_FILE"
+  echo "✅ Included autocomplete: $COMPLETION_FILE"
 fi
 
 # Handle manpage if present
@@ -88,12 +82,29 @@ if [ -f "$PKG_NAME" ]; then
   rm -f "$PKG_NAME"
 fi
 
-# Build the DEB package
-echo "Building DEB package: $PKG_NAME"
-if dpkg-deb --build "$PKG_DIR" "$PKG_NAME"; then
-  echo "DEB package created: $PKG_NAME"
+# Build the package
+echo "📦 Building Debian package $PKG_NAME..."
+if dpkg-deb --build "$PKG_DIR" "$PKG_NAME" >/dev/null; then
+  # Get the package size
+  PKG_SIZE=$(du -h "$PKG_NAME" | cut -f1)
+  
+  echo ""
+  echo "✨ Successfully built $PKG_NAME (${PKG_SIZE}B)"
+  
+  # Show package info
+  echo -e "\n📋 Package information:"
+  dpkg-deb --info "$PKG_NAME" | grep -E 'Package:|Version:|Architecture:|Installed-Size:'
+  
+  # Optional: Check the package with lintian if available
+  if command -v lintian >/dev/null 2>&1; then
+    echo -e "\n🔍 Running package linting..."
+    lintian "$PKG_NAME" || true
+  fi
+  
+  echo -e "\n✅ Build complete! Package: $(pwd)/$PKG_NAME"
+  exit 0
 else
-  echo "Error creating DEB package"
+  echo "❌ Failed to build package" >&2
   exit 1
 fi
 
