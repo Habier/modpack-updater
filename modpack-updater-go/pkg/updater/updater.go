@@ -9,26 +9,19 @@ import (
 )
 
 var (
-	// FoldersToRestore defines which folders should be updated
 	FoldersToRestore = []string{"config", "defaultconfigs", "modernfix", "mods", "schematics"}
 )
 
 // UpdateFolders updates the specified folders from a zip archive
 func UpdateFolders(destinationDir, zipPath string) error {
-	// Validate inputs
 	if err := validateInputs(destinationDir, zipPath); err != nil {
 		return fmt.Errorf("validation failed: %v", err)
 	}
 
-	// Note: Ownership restoration is not supported on Windows
-	fmt.Println("⚠ Note: File ownership preservation is not supported on this platform")
-
-	// Remove old folders
 	if err := removeOldFolders(destinationDir); err != nil {
 		return fmt.Errorf("failed to remove old folders: %v", err)
 	}
 
-	// Extract folders from zip
 	if err := extractFolders(zipPath, destinationDir); err != nil {
 		return fmt.Errorf("failed to extract folders: %v", err)
 	}
@@ -46,7 +39,6 @@ func validateInputs(destinationDir, zipPath string) error {
 		return fmt.Errorf("ZIP file path cannot be empty")
 	}
 
-	// Check if destination directory exists
 	if _, err := os.Stat(destinationDir); os.IsNotExist(err) {
 		return fmt.Errorf("destination directory does not exist: %s", destinationDir)
 	}
@@ -81,7 +73,6 @@ func removeOldFolders(destinationDir string) error {
 func extractFolders(zipPath, destinationDir string) error {
 	fmt.Println("📦 Extracting folders from ZIP...")
 
-	// Open the zip file
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
 		return fmt.Errorf("failed to open zip file: %v", err)
@@ -94,9 +85,7 @@ func extractFolders(zipPath, destinationDir string) error {
 		foldersToExtract[folder+"/"] = true
 	}
 
-	// Extract files
 	for _, f := range r.File {
-		// Check if this file is in one of our target folders
 		extract := false
 		for folder := range foldersToExtract {
 			if len(f.Name) >= len(folder) && f.Name[0:len(folder)] == folder {
@@ -109,23 +98,19 @@ func extractFolders(zipPath, destinationDir string) error {
 			continue
 		}
 
-		// Create the directory structure
 		targetPath := filepath.Join(destinationDir, filepath.FromSlash(f.Name))
 
 		if f.FileInfo().IsDir() {
-			// Create directory
 			if err := os.MkdirAll(targetPath, f.Mode()); err != nil {
 				return fmt.Errorf("failed to create directory %s: %v", targetPath, err)
 			}
 			continue
 		}
 
-		// Create parent directories if they don't exist
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 			return fmt.Errorf("failed to create parent directories for %s: %v", targetPath, err)
 		}
 
-		// Create the file
 		dstFile, err := os.OpenFile(targetPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
 			return fmt.Errorf("failed to create file %s: %v", targetPath, err)
@@ -137,7 +122,6 @@ func extractFolders(zipPath, destinationDir string) error {
 			return fmt.Errorf("failed to open zip entry %s: %v", f.Name, err)
 		}
 
-		// Copy file contents
 		if _, err := io.Copy(dstFile, srcFile); err != nil {
 			srcFile.Close()
 			dstFile.Close()
@@ -149,11 +133,5 @@ func extractFolders(zipPath, destinationDir string) error {
 	}
 
 	fmt.Println()
-	return nil
-}
-
-// restoreOwnership is a no-op on Windows
-func restoreOwnership() error {
-	// This is a no-op on Windows
 	return nil
 }
