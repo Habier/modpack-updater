@@ -1,35 +1,33 @@
-.TH MODPACK-UPDATER 1 "2025-10-17" "modpack-updater 1.0.0"
+.TH MODPACK-UPDATER 1 "2025-11-15" "modpack-updater 2.0.0"
 .SH NAME
 modpack-updater \- update modpack folders from a ZIP archive
 .SH SYNOPSIS
 .B modpack-updater
-.I destination_directory
-.I zip_file
+.I TARGET_DIRECTORY
+.I MODPACK_ARCHIVE
 .SH DESCRIPTION
-modpack-updater removes a predefined set of folders from the specified destination directory and restores them by extracting the same folders from the given ZIP archive.
+modpack-updater removes a predefined set of folders from the specified target directory and restores them by extracting the same folders from the given ZIP archive.
 
 Current folders handled: config, defaultconfigs, modernfix, mods, schematics.
 
-The script expects two arguments: the path to the destination directory and the path to the ZIP archive.
-.SH OPTIONS
+This tool is typically used to update Minecraft modpacks by replacing specific directories with updated versions from an archive.
+.SH ARGUMENTS
 .TP
-.B destination_directory
-Directory where the folders will be removed and restored.
+.B TARGET_DIRECTORY
+Directory where the folders will be removed and restored. This is typically your Minecraft instance directory.
 .TP
-.B zip_file
-ZIP archive containing the folders to restore.
+.B MODPACK_ARCHIVE
+Path to the ZIP archive containing the updated modpack files.
 .SH EXAMPLES
-Restore folders from a backup:
+Update a Minecraft instance with a new modpack version:
 .PP
 .nf
-modpack-updater /home/habier/minecraft /home/habier/new_modpack.zip
+modpack-updater /path/to/minecraft /path/to/new_modpack.zip
 .fi
 .SH FILES
 /usr/local/bin/modpack-updater
 /etc/bash_completion.d/modpack-updater
 /usr/share/man/man1/modpack-updater.1
-.SH SEE ALSO
-unzip(1), bash(1)
 .SH AUTHOR
 Written by Habier
 

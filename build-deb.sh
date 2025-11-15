@@ -8,25 +8,22 @@ for cmd in dpkg-deb go; do
   command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required"; exit 1; }
 done
 
-VERSION="${1:-${VERSION:-1.1.0}}"
+VERSION="${1:-${VERSION:-1.0.0}}"
 PKG_DIR="modpack-updater_deb"
 PKG_NAME="modpack-updater_${VERSION}_all.deb"
+BIN_DIR="$PKG_DIR/usr/local/bin"
+PLAIN_BIN="$BIN_DIR/modpack-updater"
 
 # Update control file
 CONTROL_FILE="$PKG_DIR/DEBIAN/control"
 if [ -f "$CONTROL_FILE" ]; then
   grep -qE '^Version:' "$CONTROL_FILE" && sed -i "s/^Version:.*/Version: $VERSION/" "$CONTROL_FILE"
-  grep -q '^Depends:.*unzip' "$CONTROL_FILE" || sed -i 's/^Depends:.*/&, unzip/' "$CONTROL_FILE"
 fi
 
-cd modpack-updater-go
 go mod tidy 2>/dev/null
-GOOS=linux GOARCH=amd64 go build -o "../$PKG_DIR/usr/local/bin/modpack-updater" .
-cd ..
+GOOS=linux GOARCH=amd64 go build -o "$PLAIN_BIN" .
 
 # Set executable permissions
-BIN_DIR="$PKG_DIR/usr/local/bin"
-PLAIN_BIN="$BIN_DIR/modpack-updater"
 chmod 755 "$PLAIN_BIN"
 echo "✅ Built binary: $PLAIN_BIN"
 

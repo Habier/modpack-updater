@@ -1,74 +1,65 @@
-# 🧩 modpack-updater
+# Modpack Updater (Go Version)
 
-A simple Bash script that removes a predefined set of folders from a target directory, then restores them by extracting those same folders from a ZIP file.
+A fast and reliable tool for updating Minecraft modpack folders from ZIP archives, written in Go.
 
----
+## Features
 
-## 🚀 Features
+- Removes old modpack folders (config, mods, etc.)
+- Extracts updated folders from a ZIP archive
+- Cross-platform support (Windows, Linux, macOS)
+- Clean and user-friendly output
+- Bash completion support
 
-- Takes **two arguments**:
-    1. Target directory path
-    2. ZIP file path
-- Deletes folders listed in the `folders` array.
-- Extracts those same folders from the ZIP file into the target directory.
+## Requirements
 
----
+- Go 1.23 or higher (for building from source)
 
-## 📦 Install via .deb Package (Recommended)
-
-You can build and install a .deb package for easy installation on Debian/Ubuntu systems.
-
-### Install the package
+## Usage
 
 ```bash
-sudo dpkg -i modpack-updater_1.0.0_all.deb
+modpack-updater update <destination_directory> <zip_file>
 ```
 
-If you see dependency errors, fix them with:
+## Installation
+
+### From Debian Package (recommended)
+
+1. Download the latest `.deb` package from the releases page
+2. Install using `dpkg`:
+   ```bash
+   sudo dpkg -i modpack-updater_*.deb
+   sudo apt-get install -f  # Install any missing dependencies
+   ```
+
+### From Source
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/modpack-updater.git
+   cd modpack-updater
+   ```
+
+2. Build the application:
+   ```bash
+   go build -o modpack-updater .
+   ```
+
+3. Install to your PATH (optional):
+   ```bash
+   sudo cp modpack-updater /usr/local/bin/
+   ```
+
+## Building the Debian Package
+
+To build a Debian package:
 
 ```bash
-sudo apt-get install -f
+# From the project root
+./build-deb.sh [version]
 ```
 
-After installation, you can use `modpack-updater` from anywhere as described above.
+If no version is specified, it will use 1.0.0 by default.
 
----
+## License
 
-## 🧠 Usage
-
-Run it from any user and directory:
-
-```bash
-modpack-updater <target_directory> <zip_file>
-```
-
-### 📘 Example
-
-```bash
-modpack-updater /home/habier/minecraft /home/habier/new_modpack.zip
-```
-
----
-
-## 🧰 Requirements
-
-- `bash` – included by default on most Linux distributions
-- `unzip` – required to extract files
-
-If `unzip` is not installed:
-
-```bash
-sudo apt install unzip
-```
-(Use your distro’s package manager if not on Debian/Ubuntu.)
-
----
-
-## 🧾 Internal Folder List
-
-Inside the script, these are the folders that will be deleted and restored:
-
-```bash
-folders=("config" "defaultconfigs" "modernfix" "mods" "schematics")
-```
-You can edit this list in the script to include or remove folders.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
