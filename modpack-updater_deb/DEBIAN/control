@@ -3,10 +3,10 @@ Version: 1.0.1
 Section: utils
 Priority: optional
 Architecture: all
-Depends: bash, unzip
+Depends: bash
 Recommends: bash-completion
 Maintainer: Habier <your@email.com>
 Description: Simple script to update modpack folders from a ZIP archive.
  A small utility that removes a defined set of folders from a destination
- directory and restores them from a ZIP backup. The package also installs
- an optional bash completion script and a manpage when present.
+ directory and restores them from a ZIP archive.
+ 
